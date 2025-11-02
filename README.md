@@ -139,8 +139,8 @@ Returns the slippage percentage for each source compared to the average.
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd currency-exchange-api
+git clone https://github.com/kshitijnangare/Currency-Exchange-API
+cd Currency-Exchange-API
 ```
 
 2. Install dependencies:
@@ -170,27 +170,6 @@ npm start
 ```
 
 The API will be available at `http://localhost:3000`
-
-## Deployment
-
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions on deploying to Render.
-
-### Quick Deploy Steps:
-
-1. Create PostgreSQL database on Render
-2. Create Web Service on Render
-3. Configure environment variables
-4. Deploy!
-
-**Build Command:**
-```bash
-npm install && npx prisma generate && npx prisma db push
-```
-
-**Start Command:**
-```bash
-node src/index.js
-```
 
 ## Environment Variables
 
@@ -238,16 +217,16 @@ Test your endpoints using cURL:
 
 ```bash
 # Get all quotes
-curl https://your-app.onrender.com/quotes
+curl https://currency-exchange-api-gx85.onrender.com/quotes
 
 # Get averages
-curl https://your-app.onrender.com/average
+curl https://currency-exchange-api-gx85.onrender.com/average
 
 # Get slippage
-curl https://your-app.onrender.com/slippage
+curl https://currency-exchange-api-gx85.onrender.com/slippage
 
 # Health check
-curl https://your-app.onrender.com/health
+curl https://currency-exchange-api-gx85.onrender.com/health
 ```
 
 ## Troubleshooting
@@ -261,8 +240,6 @@ Verify your `DATABASE_URL` is correct and the database is running.
 ### Build failures
 Check that all files are committed and `package.json` is valid.
 
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for more troubleshooting tips.
-
 ## Performance
 
 - **Cold start**: ~50 seconds (Render free tier)
@@ -275,32 +252,3 @@ See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for more troubleshooting tips.
 - **Render**: Service suspends after 15 min inactivity
 - **PostgreSQL**: 1GB storage, 90 days free trial
 - **Rate limiting**: Subject to Render's limits
-
-## Future Enhancements
-
-- [ ] Add more currency pairs
-- [ ] Implement caching layer (Redis)
-- [ ] Add API authentication
-- [ ] WebSocket support for real-time updates
-- [ ] Historical data storage
-- [ ] Rate limiting per client
-- [ ] API documentation (Swagger)
-
-## License
-
-MIT
-
-## Contributing
-
-Pull requests are welcome! For major changes, please open an issue first.
-
-## Support
-
-For issues or questions:
-1. Check the [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-2. Review Render logs
-3. Open an issue on GitHub
-
----
-
-Built with ❤️ using Node.js and Prisma
