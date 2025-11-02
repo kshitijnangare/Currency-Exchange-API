@@ -1,37 +1,50 @@
+/*
+Main application entry point.
+This file is responsible for:
+1. Initializing the Express server.
+2. Connecting to the PostgreSQL database via Prisma.
+3. Setting up all application-level middleware (like JSON parsing).
+4. Mounting the API routes.
+5. Starting the background job scheduler.
+6. Starting the server and listening for requests.
+Also includes graceful shutdown logic.
+@author Kshitij
+@project Currency Exchange API
+ */
+
 const express = require('express');
 const prisma = require('./db');
 const quoteRoutes = require('./routes/quoteRoutes');
 const { initializeQuoteUpdateJob } = require('./jobs/updateQuotes');
 
-// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Add request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
 
-// Health check endpoint
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Currency Exchange API is running',
-    version: '1.0.0',
-    endpoints: {
-      quotes: '/quotes',
-      average: '/average',
-      slippage: '/slippage'
-    },
-    status: 'healthy'
-  });
+  res.status(200).send(`
+    <pre>
+      Welcome to the Currency Exchange API!
+
+      Go to /quotes to view all quotes:
+      <a href="/quotes">/quotes</a>
+
+      Go to /average to view average prices:
+      <a href="/average">/average</a>
+
+      Go to /slippage to view slippage data:
+      <a href="/slippage">/slippage</a>
+    </pre>
+  `);
 });
 
-// Health check for monitoring services
 app.get('/health', async (req, res) => {
   try {
     // Check database connection
@@ -52,10 +65,8 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Mount routes
 app.use('/', quoteRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
@@ -64,7 +75,6 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({
@@ -73,24 +83,20 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
 async function startServer() {
   try {
-    // Test database connection
     await prisma.$connect();
-    console.log('✓ Database connected successfully');
+    console.log('Database connected successfully');
 
-    // Initialize the background job for updating quotes
     initializeQuoteUpdateJob();
-    console.log('✓ Background job initialized');
+    console.log('Background job initialized');
 
-    // Start the Express server
     app.listen(PORT, () => {
-      console.log(`✓ Server is running on port ${PORT}`);
-      console.log(`✓ API endpoints available at:`);
-      console.log(`  - http://localhost:${PORT}/quotes`);
-      console.log(`  - http://localhost:${PORT}/average`);
-      console.log(`  - http://localhost:${PORT}/slippage`);
+      console.log(`Server is running on port ${PORT}`);
+      console.log(`API endpoints available at:`);
+      console.log(`http://localhost:${PORT}/quotes`);
+      console.log(`http://localhost:${PORT}/average`);
+      console.log(`http://localhost:${PORT}/slippage`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
@@ -98,7 +104,6 @@ async function startServer() {
   }
 }
 
-// Handle graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\nShutting down gracefully...');
   await prisma.$disconnect();
@@ -111,5 +116,4 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Start the application
 startServer();

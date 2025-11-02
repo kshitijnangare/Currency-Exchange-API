@@ -1,9 +1,15 @@
+/*
+Quote API Controller
+This file contains the core business logic for the currency API endpoints.
+- getQuotes: Fetches all formatted quotes from the database.
+- getAverage: Fetches all quotes, calculates the average, and returns it.
+- getSlippage: Fetches all quotes, calculates the average, and then calculates the slippage for each source against that average.
+All functions read directly from the database, ensuring API responses are fast and don't wait for external fetches.
+*/
+
 const prisma = require('../db');
 
-/**
- * GET /quotes
- * Returns all quotes from the database with their latest prices and update timestamps
- */
+// GET /quotes
 async function getQuotes(req, res) {
   try {
     const quotes = await prisma.quote.findMany({
@@ -35,10 +41,7 @@ async function getQuotes(req, res) {
   }
 }
 
-/**
- * GET /average
- * Returns the average buy and sell prices across all quotes
- */
+// GET /average
 async function getAverage(req, res) {
   try {
     const quotes = await prisma.quote.findMany({
@@ -56,8 +59,6 @@ async function getAverage(req, res) {
         sourceCount: 0
       });
     }
-
-    // Calculate averages
     const totalBuyPrice = quotes.reduce((sum, quote) => sum + quote.buy_price, 0);
     const totalSellPrice = quotes.reduce((sum, quote) => sum + quote.sell_price, 0);
 
@@ -78,11 +79,7 @@ async function getAverage(req, res) {
   }
 }
 
-/**
- * GET /slippage
- * Returns the slippage percentage for each quote compared to the average
- * Slippage = (individual_price - average_price) / average_price
- */
+// GET /slippage
 async function getSlippage(req, res) {
   try {
     const quotes = await prisma.quote.findMany({
@@ -100,21 +97,16 @@ async function getSlippage(req, res) {
       });
     }
 
-    // Calculate averages
     const totalBuyPrice = quotes.reduce((sum, quote) => sum + quote.buy_price, 0);
     const totalSellPrice = quotes.reduce((sum, quote) => sum + quote.sell_price, 0);
 
     const average_buy_price = totalBuyPrice / quotes.length;
     const average_sell_price = totalSellPrice / quotes.length;
 
-    // Calculate slippage for each quote
     const slippages = quotes.map(quote => {
-      // Calculate raw differences
       const buy_price_difference = quote.buy_price - average_buy_price;
       const sell_price_difference = quote.sell_price - average_sell_price;
 
-      // Calculate slippage percentages
-      // Slippage = (individual - average) / average
       const buy_price_slippage = average_buy_price !== 0 
         ? (buy_price_difference / average_buy_price)
         : 0;
