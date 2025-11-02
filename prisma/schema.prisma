@@ -1,0 +1,20 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Quote {
+  id         Int      @id @default(autoincrement())
+  source     String   @unique // The full URL from the assignment
+  buy_price  Float
+  sell_price Float
+  updatedAt  DateTime @updatedAt // Automatically tracks last update
+  createdAt  DateTime @default(now())
+}
